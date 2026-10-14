@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>E-commerce Quiz</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--tx:#1d2330;--mut:#6b7385;--pri:#3b5bdb;--ok:#2f9e44;--okbg:#e6f7ea;--bad:#e03131;--badbg:#fdeaea;--bd:#dfe3ec}
+@media(prefers-color-scheme:dark){:root{--bg:#14171f;--card:#1e222d;--tx:#e8ebf2;--mut:#98a1b5;--pri:#748ffc;--ok:#51cf66;--okbg:#1c3324;--bad:#ff6b6b;--badbg:#3a2022;--bd:#313748}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:16px}
+h1{font-size:26px;margin:8px 0 4px}h2{font-size:20px;margin:0 0 12px}
+.sub{color:var(--mut);margin:0 0 20px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:10px 14px}
+button:hover{border-color:var(--pri)}
+button.pri{background:var(--pri);border-color:var(--pri);color:#fff}
+button:disabled{opacity:.5;cursor:default}
+.chbtn{text-align:left;padding:14px}.chbtn b{display:block}.chbtn span{color:var(--mut);font-size:14px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+@media(max-width:600px){.modes{grid-template-columns:1fr}}
+.mode{padding:18px;text-align:left}.mode b{font-size:18px;display:block;margin-bottom:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.bar{height:8px;background:var(--bd);border-radius:6px;overflow:hidden;margin-bottom:14px}.bar i{display:block;height:100%;background:var(--pri)}
+.tag{display:inline-block;font-size:13px;color:var(--mut);margin-bottom:6px}
+.q{font-size:18px;font-weight:600;margin:0 0 14px;white-space:pre-line}
+.opt{display:block;width:100%;text-align:left;margin-bottom:8px;padding:12px 14px}
+.opt.sel{border-color:var(--pri);background:color-mix(in srgb,var(--pri) 12%,var(--card))}
+.opt.ok{border-color:var(--ok);background:var(--okbg)}.opt.bad{border-color:var(--bad);background:var(--badbg)}
+.fb{margin-top:8px;padding:10px 14px;border-radius:10px;font-weight:600}.fb.ok{background:var(--okbg);color:var(--ok)}.fb.bad{background:var(--badbg);color:var(--bad)}
+.nav{display:flex;justify-content:space-between;gap:8px;margin-top:14px;flex-wrap:wrap}
+.pal{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.pal button{width:36px;height:34px;padding:0;font-size:13px}
+.pal button.done{background:color-mix(in srgb,var(--pri) 18%,var(--card));border-color:var(--pri)}
+.pal button.cur{outline:2px solid var(--pri)}
+.pal button.ok{background:var(--okbg);border-color:var(--ok)}.pal button.bad{background:var(--badbg);border-color:var(--bad)}
+.score{font-size:44px;font-weight:700;margin:4px 0}
+table{width:100%;border-collapse:collapse}td,th{padding:6px 8px;border-bottom:1px solid var(--bd);text-align:left}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+label.chk{display:flex;gap:6px;align-items:center;color:var(--mut);font-size:15px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+/* ===== NGÂN HÀNG CÂU HỎI =====
+ Trắc nghiệm: [câu hỏi, A, B, C, D, đáp án]   |   Đúng/Sai: [câu hỏi, "T" hoặc "F"] */
+const RAW = [
+/* ---------- CHƯƠNG 1 ---------- */
+[
+["Which of the following features of e-commerce technology allows users to participate in the creation of online content?","ubiquity","global reach","information density","social technology","D"],
+["In 2015, the world's online population was estimated to be around:","310 million.","3.1 billion.","31 billion.","310 billion.","B"],
+["Which of the following features of e-commerce technology is related to the concept of network externalities?","richness","interactivity","universal standards","information density","C"],
+["Which of the following statements is true about the traditional tradeoff between the richness and reach of a marketing message prior to the development of the Web?","Marketing messages had little richness.","The smaller the audience reached, the less rich the message.","The larger the audience reached, the less rich the message.","Richness was unrelated to reach.","C"],
+["Interactivity in the context of e-commerce provides which of the following functionalities?","the ability to physically touch and manipulate a product","complexity and content of a message","the ability of consumers to create and distribute content","the enabling of two-way communication between consumer and merchant","D"],
+["The costs incurred by merchants in having to change product prices (such as the costs of reentering prices into computer systems) are referred to as which of the following?","subscription costs","fixed costs","menu costs","variable costs","C"],
+["Which of the following refers to any disparity in relevant market information among parties in a transaction?","information asymmetry","unfair competitive advantage","imperfect competition","dynamic pricing","A"],
+["Which of the following is a physical place you visit in order to transact?","marketspace","marketplace","social network","the Internet","B"],
+["The total number of users or customers an e-commerce business can obtain is a measure of which of the following?","ubiquity","interactivity","reach","information density","C"],
+["Which of the following refers to the complexity and content of a message?","richness","reach","information density","interactivity","A"],
+["E-commerce is available just about everywhere and anytime. This is known as ________.","richness","information density","ubiquity","reach","C"],
+["Ubiquity lowers the cognitive energy required to transact in a marketspace.","T"],
+["The fact that e-commerce is conducted on the basis of universal standards increases search costs for consumers.","F"],
+["The fact that e-commerce is conducted on the basis of universal standards decreases search costs for consumers.","T"],
+["Universal standards make price discovery more costly, slower, and less accurate.","F"],
+["Cost transparency refers to the ease with which consumers can find out the variety of prices in a market.","F"],
+["Personalization involves targeting marketing messages to specific individuals by adjusting the message based upon a consumer's preferences or past purchasing behavior.","T"],
+["E-commerce technologies provide a unique, many-to-many model of mass communication.","T"],
+["Which type of e-commerce is distinguished by the type of technology used in the transaction rather than by the nature of the market relationship?","consumer-to-consumer (C2C)","social e-commerce","mobile e-commerce","business-to-business (B2B)","C"],
+["Which of the following is an example of social e-commerce?","Amazon","eBay","Wikipedia","Facebook","D"],
+["Business-to-consumer (B2C) e-commerce in the United States:","has grown at double-digit rates between 2010 and 2015.","has less revenue than C2C e-commerce.","now constitutes over 50% of the overall U.S. retail market.","is growing more slowly as it confronts its own fundamental limitations.","A"],
+["Which of the following is not true about the use of apps?","The average U.S. consumer spends over two hours a day using apps.","Users still spend less time using apps than they do using desktops or mobile Web sites.","Apps are easier to control and monetize than Web sites.","Around 280 million people worldwide launch a smartphone app more than 60 times a day.","B"],
+["Which of the following is an example of an on-demand service company?","YouTube","Airbnb","Tumblr","Facebook","B"],
+["Which of the following is an example of B2B e-commerce?","Airbnb","Facebook","Groupon","Go2Paper","D"],
+["Which of the following is an example of C2C e-commerce?","Amazon","Groupon","Craigslist","Go2Paper","C"],
+["All of the following are examples of social networks except:","Instagram.","Twitter.","Y Combinator.","Pinterest.","C"],
+["B2B e-commerce is the largest type of e-commerce.","T"],
+["Which of the following statements about e-commerce in the United States in 2015 is not true?","Social e-commerce generates more revenue than mobile e-commerce.","About 200 million U.S. consumers use mobile apps.","On-demand service firms are fueling the growth of local e-commerce.","Growth rates for retail e-commerce are higher in Europe than in the United States.","A"],
+["In 2015, roughly ________ million people in the United States accessed the Internet via tablets.","59","94","159","194","C"],
+["Which of the following is not a major business trend in e-commerce in 2015-2016?","Mobile e-commerce continues to grow.","Small businesses and entrepreneurs are hampered by the rising cost of market entry caused by increased presence of industry giants.","On demand service companies garner multi-billion dollar valuations.","Mobile and social advertising platforms begin to challenge search engine marketing.","B"],
+["Which of the following is not a major technology trend in e-commerce in 2015-2016?","Mobile messaging services become popular with smartphone users.","Firms are turning to business analytics to make sense out of Big Data.","The mobile computing and communications platform creates an alternative platform for online transactions, marketing, advertising, and media viewing.","Computing and networking component prices increase dramatically.","D"],
+["All of the following are major social trends in e-commerce in 2015-2016 except for:","concerns about the flood of temporary, poorly paid jobs without benefits being generated by on-demand service companies.","the continuing conflict over copyright management and control.","the refusal of online retailers to accept taxation of Internet sales.","the growth of government surveillance of Internet communications.","C"],
+["Which of the following is not a major business trend in e-commerce in 2015-2016? (phiên bản 2)","the growth of a mobile app ecosystem","the weakening revenues of B2B e-commerce","the emergence of social e-commerce","the growth of the on-demand service firms","B"],
+["Which of the following describes the basic Web policy of large firms during the Invention period?","Integrate social networks and the mobile platform with Web site marketing.","Emphasize the necessity for the Web to generate profits.","Use the Web to sell complex goods and services online.","Maintain a basic, static Web site depicting the firm's brand.","D"],
+["The size of the B2B market in 2015 was estimated to be around:","$630 million.","$6.3 billion.","$630 billion.","$6.3 trillion.","D"],
+["Which of the following statements about the Web is not true?","The Web is the technology upon which the Internet is based.","The Web was the original 'killer app.'","The Web provides access to pages written in HyperText Markup Language.","The Web is both a communications infrastructure and an information storage system.","A"],
+["In 2015, there were an estimated ________ Internet hosts.","1 million","10 million","100 million","1 billion","D"],
+["All of the following can be considered a precursor to e-commerce except:","the development of the smartphone.","Baxter Healthcare's PC-based remote order entry system.","the French Minitel.","the development of Electronic Data Interchange standards.","A"],
+["Which of the following was the first truly large-scale digitally enabled transaction system in the B2C arena?","Telex","the Baxter Healthcare system","the French Minitel","EDI","C"],
+["In which year can e-commerce be said to have begun?","1983","1985","1995","2001","C"],
+["All of the following are issues facing Pinterest except:","copyright infringement.","inability to retain users.","spam.","scams.","B"],
+["Which of the following is a characteristic of e-commerce during the Invention period?","mobile technology","earnings and profit emphasis","disintermediation","extensive government surveillance","C"],
+["All of the following are examples of Web 2.0 sites and applications except:","photo-sharing sites.","blogs.","wikis.","auction sites.","D"],
+["Which of the following is not a characteristic of a perfect competitive market?","Price, cost, and quality information are equally distributed.","A nearly infinite set of suppliers compete against one another.","Customers have access to all relevant information worldwide.","It is highly regulated.","D"],
+["All of the following were visions of e-commerce expressed during the early years of e-commerce except:","a nearly perfect information marketspace.","friction-free commerce.","disintermediation.","fast follower advantage.","D"],
+["Unfair competitive advantages occur when:","one competitor has an advantage others cannot purchase.","market middlemen are displaced.","information is equally distributed and transaction costs are low.","firms are able to gather monopoly profits.","A"],
+["The early years of e-commerce were driven by all of the following factors except:","an emphasis on exploiting traditional distribution channels.","a huge infusion of venture capital funds.","an emphasis on quickly achieving very high market visibility.","visions of profiting from new technology.","A"],
+["Which business application is associated with the technological development of local area networks and client/server computing?","transaction automation (e.g., payroll)","desktop automation (e.g., word processing)","industrial system automation (e.g., supply chain management)","workgroup automation (e.g., document sharing)","D"],
+["Which of the following is one of the three primary societal issues related to e-commerce?","liability","anonymity","equity","intellectual property","D"],
+["Which of the following statements is not true?","No one academic perspective dominates research about e-commerce.","Economists take a purely technical approach to e-commerce.","There are two primary approaches to e-commerce: behavioral and technical.","Management scientists are interested in e-commerce as an opportunity to study how business firms can exploit the Internet to achieve more efficient business operations.","B"],
+["Above all, e-commerce is a ________ phenomenon.","technology driven","finance-driven","sociological","government-driven","A"],
+["Which of the following is not an element of friction-free commerce?","Information is equally distributed.","Transaction costs are high.","Prices can be dynamically adjusted to reflect actual demand.","Unfair competitive advantages are eliminated.","B"],
+["Which of the following refers to the displacement of market middlemen and the creation of a new direct relationship between producers and consumers?","network effect","disintermediation","friction-free commerce","first mover advantage","B"],
+["Which of the following was the original 'killer app' that made the Internet commercially interesting and extraordinarily popular?","e-commerce","The World Wide Web","social networks","mobile apps","B"],
+["Which of the following refers to the practice of researching a product online before purchasing it at a physical store?","zooming","grazing","showrooming","webrooming","D"],
+["Which of the following is an example of an e-commerce first mover that failed?","Etsy","eToys","eBay","E*Trade","B"],
+["Which of the following statements is not true?","Information asymmetries are continually being introduced by merchants and marketers.","Intermediaries have not disappeared.","Overall transaction costs have dropped dramatically.","Brands remain very important in e-commerce.","C"],
+["Which of the following is not true regarding e-commerce today?","Economists' visions of a friction-free market have not been realized.","Consumers are less price-sensitive than expected.","There remains considerable persistent price dispersion.","The market middlemen disappeared.","D"],
+["Which of the following is a characteristic of the Consolidation phase of e-commerce?","predominance of pure online strategies","emphasis on revenue growth versus profits","brand extension and strengthening becomes more important than creating new brands","shift to a technology-driven approach","C"],
+["Which of the following is a characteristic of the Reinvention phase of e-commerce?","massive proliferation of dot-com start-ups","widespread adoption of broadband networks","rapid growth of search engine advertising","expansion of e-commerce to include services as well as goods","D"],
+["Which of the following best describes the early years of e-commerce?","They were a technological success but a mixed business success.","They were a technological success but a business failure.","They were a technological failure but a business success.","They were a mixed technological and business success.","A"],
+["The early years of e-commerce are considered:","the most promising time in history for the successful implementation of first mover advantages.","an economist's dream come true, where for a brief time consumers had access to all relevant market information and transaction costs plummeted.","a stunning technological success as the Internet and the Web increased from a few thousand to billions of e-commerce transactions per year.","a dramatic business success as 85% of dot-coms formed since 1995 became flourishing businesses.","C"],
+["Retail e-commerce in the United States is not expected to continue growing at double-digit growth rates in 2015-2016.","F"],
+["The Internet is a worldwide network of computer networks.","T"],
+["The Internet has shown similar growth patterns as other electronic technologies of the past.","F"],
+["The emergence of mobile, social, and local e-commerce occurred during the Consolidation period of e-commerce.","T"],
+["The Reinvention period of e-commerce is as much a sociological phenomenon as it is a technological or business phenomenon.","T"],
+["Price dispersion remains pervasive online.","T"],
+["Price dispersion has been eliminated in e-commerce.","F"],
+["Which of the following is not a major technology trend in e-commerce in 2017-2018?","Growth of the Internet of Things slows down.","Firms are turning to business analytics to make sense out of big data.","The mobile computing and communications platform creates an alternative platform for online transactions, marketing, advertising, and media viewing.","Mobile messaging services become popular with smartphone users.","A"],
+["All of the following are major social trends in e-commerce in 2017-2018 except for:","participation of adults in social networks begins to decrease.","the continuing conflict over copyright management and control.","the growth of government surveillance of Internet communications.","concerns about the flood of temporary, poorly paid jobs without benefits being generated by on-demand service companies.","A"],
+["Which of the following statements about the mobile platform is not true?","Over 93% of Americans used a mobile device to access the Internet at least some of the time in 2017.","The size of the mobile app audience greatly exceeds that of the mobile web audience.","Retail purchases made on desktops account for almost two-thirds of all online purchases.","The time U.S. adults spend using mobile apps accounts for over 60% of total digital minutes spent.","B"],
+["E-commerce can be defined as:","the use of the Internet, the Web, and mobile apps to transact business.","the use of any Internet technologies in a firm's daily activities.","the digital enablement of transactions and processes within an organization.","any digitally enabled transactions among individuals and organizations.","A"],
+["Which of the following is an example of e-business?","Amazon's inventory control system","the Amazon.com Web site","an Amazon mobile app","Amazon's Pinterest page","A"],
+["Which of the following terms can be considered synonymous with the term e-commerce?","e-business","digital commerce","the Internet","the Web","B"],
+["The term e-commerce refers to the digital enabling of transactions and processes involving an exchange of value across organizational boundaries.","T"],
+["E-commerce and e-business systems blur together at the business firm boundary, at the point at which internal business systems link up with suppliers or customers.","T"],
+["The term e-commerce refers to the digital enabling of business processes both inside and outside the firm.","F"],
+["Which of the following is not a unique feature of e-commerce technology?","interactivity","social technology","information asymmetry","richness","C"],
+["Which of the following features of e-commerce technology enables merchants to market and sell 'complex' goods and services to consumers via marketing messages that can integrate video, audio, and text?","richness","ubiquity","information density","personalization","A"],
+["Which of the following is the best definition of transaction cost?","the expense of changing national or regional prices","the cost of participating in a market","the cost of finding suitable products in the market","the cost merchants pay to bring their goods to market","B"]
+],
+/* ---------- CHƯƠNG 2 ---------- */
+[
+["________ and ________ are typically the most easily identifiable aspects of a company's business model.","Market strategy; market opportunity","Value proposition; revenue model","Value proposition; competitive environment","Revenue model; market strategy","B"],
+["All of the following are using a subscription revenue model for music except:","Spotify.","Scribd.","Rhapsody.","Pandora.","B"],
+["Which element of the business model addresses what a firm provides that other firms do not and cannot?","revenue model","competitive advantage","market strategy","value proposition","D"],
+["Which element of the business model refers to the presence of substitute products in the market?","value proposition","competitive environment","competitive advantage","market strategy","B"],
+["Which of the following are Amazon's primary value propositions?","personalization and customization","selection and convenience","reduction of price discovery cost","management of product delivery","B"],
+["A firm's ________ describes how a firm will produce a superior return on invested capital.","value proposition","revenue model","market strategy","competitive advantage","B"],
+["Which of the following is an example of the subscription revenue model?","eHarmony","eBay","E*Trade","Twitter","A"],
+["Stickiness is an important attribute for which of the following revenue models?","advertising revenue model","subscription revenue model","transaction fee revenue model","sales revenue model","A"],
+["Which of the following companies uses a transaction fee revenue model?","Yahoo","E*Trade","Twitter","Sears","B"],
+["Which of the following is an example of the affiliate revenue model?","Scribd","eBay","L.L. Bean","MyPoints","D"],
+["Which of the following involves a company giving away a certain level of product or services without charge, but then charging a fee for premium levels?","advertising revenue model","subscription revenue model","freemium strategy","transaction fee revenue model","C"],
+["Which of the following factors is not a significant influence on a company's competitive environment?","how many competitors are active","what the market share of each competitor is","the availability of supportive organizational structures","how competitors price their products","C"],
+["Which of the following would be considered an indirect competitor of Priceline?","Travelocity","Expedia","Orbitz","TripAdvisor","D"],
+["The existence of a large number of competitors in any one market segment may indicate:","an untapped market niche.","the market is saturated.","no one firm has differentiated itself within that market.","a market that has already been tried without success.","B"],
+["All of the following can be considered a direct or indirect competitor of Amazon except:","eBay.","Apple's iTunes Store.","Walmart.","Starbucks.","D"],
+["A perfect market is one in which:","there are no competitive advantages or asymmetries because all firms have equal access to all the factors of production.","one firm develops an advantage based on a factor of production that other firms cannot purchase.","one participant in the market has more resources than the others.","competition is at a minimum, as each niche market within an industry is served by the company with the greatest competitive advantage.","A"],
+["Organizations that typically provide an array of services to start-up companies along with a small amount of funding are referred to as:","angel investors.","crowdfunders.","incubators.","venture capital investors.","C"],
+["A ________ specifically details how you plan to find customers and to sell your product.","sales analysis","business plan","competitive strategy","market strategy","D"],
+["Which of the following is not a community provider?","LinkedIn","Facebook","Priceline","Pinterest","C"],
+["Which of the following is not a variation of the e-tailer business model?","bricks-and-clicks","virtual merchant","market creator","manufacturer-direct","C"],
+["An example of a company using the content provider model is:","Priceline.","Rhapsody.","Dell.","eBay.","B"],
+["Which of the following is not an example of the bricks-and-clicks e-tailing business model?","Walmart","Sears","Bluefly","Staples","C"],
+["The overall retail market in the United States in 2015 was estimated at about:","$48 trillion.","$4.8 trillion.","$480 billion.","$48 billion.","B"],
+["In general, the key to becoming a successful content provider is to:","own the content being provided.","own the technology by which content is created, presented, and distributed.","provide online content for free.","provide other services as well as online content.","A"],
+["Which of the following was not able to successfully implement a freemium business model?","Pandora","Dropbox","LinkedIn","Ning","D"],
+["All of the following may lead to a competitive advantage except:","less expensive suppliers.","better employees.","fewer products.","superior products.","C"],
+["Which of the following is an unfair competitive advantage?","Brand name","access to global markets","lower product prices","superior technology","A"],
+["Which of the following gives a business model the most credibility with outside investors?","the firm's management team","the firm's value proposition","the firm's market opportunity","the firm's market strategy","A"],
+["Which of the following statements about Foursquare is not true?","Foursquare combines a social network business model with location-based technology.","Foursquare began operating without a revenue model.","Foursquare's business model faces significant intellectual property concerns.","Foursquare has been able to command a high valuation from venture capital investors despite unimpressive revenue and profits.","C"],
+["Which type of investor typically becomes interested in a start-up company after it has begun generating revenue?","incubators","angel investors","crowdfunders","venture capital investors","D"],
+["Which of the following is another name for a revenue model?","business model","business strategy","financial model","financial statements","C"],
+["All of the following use a social network marketing strategy except:","Twitter.","YouTube.","Pinterest.","Amazon.","D"],
+["The use by a company of its competitive advantage to achieve more advantage in surrounding markets is known as ________.","market strategy","differentiation","leverage","focus","C"],
+["A wealthy individual who invests personal funds in a start-up in exchange for an equity stock in the business is referred to as a(n) ________.","incubator","angel investor","venture capital investor","crowdfunder","B"],
+["Which of the following is not a key element of an elevator pitch?","exit strategy","growth metrics","legal structure","market opportunity","C"],
+["A value proposition defines how a company's product or service fulfills the needs of a customer.","T"],
+["Firms that fail to produce returns greater than alternative investments typically go out of business.","T"],
+["An asymmetry exists whenever all participants in a market have equivalent resources.","F"],
+["First movers are often not as successful as follower firms.","T"],
+["All firms need an organization to efficiently implement their business plans and strategies.","T"],
+["The JOBS Act and SEC enabling regulations allow a start-up company to use crowdfunding to solicit accredited investors to invest in small and early-stage start-ups.","T"],
+["The business model of e-tailers is quite similar to that of:","e-distributors.","transaction brokers.","exchanges.","service providers.","A"],
+["All of the following use an advertising revenue model except:","Twitter.","Yahoo.","Google.","Amazon.","D"],
+["Which of the following is not considered a portal?","Yahoo","MSN","Amazon","AOL","C"],
+["Portals primarily generate revenue in all of the following ways except:","charging advertisers for ad placement.","collecting transaction fees.","sales of goods.","charging subscription fees.","C"],
+["The basic value proposition of community providers is:","they offer a fast, convenient one-stop site where users can focus on their most important concerns and interests.","they offer consumers valuable, convenient, time-saving, and low cost alternatives to traditional service providers.","they create a digital electronic environment for buyers and sellers to meet, agree on a price, and transact.","they increase customers' productivity by helping them get things done faster and more cheaply.","A"],
+["eBay uses all of the following business models except:","B2C market creator.","C2C market creator.","content provider.","e-commerce infrastructure provider.","C"],
+["All of the following are business models employed in the online music industry except:","subscription.","peer-to-peer streaming.","download-and-own.","cloud streaming.","B"],
+["The financial services, travel services, and job placement services industries typically use the ________ business model.","community provider","transaction broker","market creator","e-tailer","B"],
+["In the ________ business model, a Web-based business builds a digital environment in which buyers and sellers can meet, display products, search for products, and establish prices.","market creator","community provider","e-tailer","portal","A"],
+["On-demand service companies are characterized by the free sharing of resources between the company and consumers.","F"],
+["All of the following are examples of B2B business models except:","e-distributors.","e-procurement.","exchanges.","e-tailers.","D"],
+["What is the primary revenue model for an e-distributor?","sales","transaction fee","advertising","subscription","A"],
+["W.W. Grainger is an example of which of the following business models?","B2B service provider","exchange","e-distributor","industry consortia","C"],
+["________ create and sell access to digital markets.","E-distributors","Portals","E-procurement firms","Market creators","D"],
+["Which of the following may offer its customers value chain management software?","e-distributors","e-procurement companies","exchanges","community providers","B"],
+["Over the past decade, the number of exchanges has:","greatly increased.","diminished sharply.","stayed about the same.","increased slowly but steadily.","B"],
+["SupplyOn is an example of a(n):","private industrial network.","exchange.","industry consortium.","e-distributor.","C"],
+["A ________ marketplace supplies products and services of interest to particular industries.","perfect","differentiated","horizontal","vertical","D"],
+["SaaS and PaaS providers can typically provide services at lower costs through scale economies.","T"],
+["Which business strategy involves implementing a new, more efficient set of business processes that other firms cannot yet obtain?","strategy of cost competition","scope strategy","customer intimacy strategy","focus/market niche strategy","A"],
+["Which feature of e-commerce technology changes industry structure by lowering barriers to entry but greatly expands the market at the same time?","global reach","richness","interactivity","personalization","A"],
+["Which of the following is not a primary activity in a firm value chain?","outbound logistics","finance/accounting","operations","after-sales service","B"],
+["A ________ is a networked business ecosystem that coordinates a firm's suppliers, distributors, and delivery firms with its own production needs using an Internet-based supply chain management system.","value chain","value system","value web","business strategy","C"],
+["If you wished to leverage the ubiquitous nature of the Web to differentiate your product, you would:","enable individual customization of the product by consumers.","implement a strategy of commoditization.","adopt a strategy of cost competition.","develop a scope strategy to compete within a narrower market segment.","A"],
+["A strategy designed to compete within a narrow market or product segment is called a ________ strategy.","scope","differentiation","cost","focus","D"],
+["________ technologies are technologies that enable the incremental improvement of products and services.","Sustaining","Differentiating","Disruptive","Commodity","A"],
+["Innovative entrepreneurs and their business firms that destroy existing business models are referred to as ________.","crowdfunders","venture capitalists","disruptors","angel investors","C"],
+["The term unfit fitness refers to a situation in which employees of a firm have the wrong skills for the current environment.","T"],
+["Scale economies are efficiencies that result from flattening the hierarchy of an organization.","F"],
+["A company's strong linkages with its customers increase switching costs.","T"],
+["The Internet's universal standards can change industry structure by increasing barriers to entry and decreasing competition within an industry.","F"],
+["Interactivity that enables product customization alters industry structure by increasing the threat of substitutes.","F"],
+["E-commerce has increased price competition in nearly all markets.","T"],
+["Social technologies change industry structure by shifting programming and editorial decisions to consumers and creating substitute entertainment products.","T"]
+],
+/* ---------- CHƯƠNG 3 ---------- */
+[
+["During which period of time did the Institutionalization phase of Internet development take place?","1950-1960","1961-1974","1975-1995","1995-through the present","C"],
+["Which of the following occurred during the Commercialization phase of Internet development?","The fundamental building blocks of the Internet were realized in actual hardware and software.","Mosaic was invented.","The Domain Name System was introduced.","NSF privatized the operation of the Internet's backbone.","D"],
+["During which phase of the development of the Internet was the Domain Name System (DNS) introduced?","Commercialization phase","Institutional phase","Innovation phase","Consolidation phase","B"],
+["Which of the following is not one of the basic technological foundations of the Internet?","client/server computing","FTP","TCP/IP","packet switching","B"],
+["The process of slicing digital messages into parcels, sending them along different communication paths as they become available, and reassembling them at the destination is called:","routing.","the Transmission Control Protocol.","packet switching.","the File Transfer Protocol.","C"],
+["Which of the following is the core communications protocol for the Internet?","Telnet","FTP","TCP/IP","TLS","C"],
+["The Transport Layer of TCP/IP is responsible for which of the following?","placing packets on and receiving them from the network medium","addressing, packaging, and routing messages","providing communication with the application by acknowledging and sequencing the packets to and from the application","providing a variety of applications with the ability to access the services of the lower layers","C"],
+["The Internet Layer of TCP/IP is responsible for which of the following?","placing packets on and receiving them from the network medium","addressing, packaging, and routing messages","providing communication with the application by acknowledging and sequencing the packets to and from the application","providing a variety of applications with the ability to access the services of the lower layers","B"],
+["An IPv4 address is expressed as a:","32-bit number that appears as a series of four separate numbers separated by semicolons.","64-bit number that appears as a series of four separate numbers separated by semicolons.","64-bit number that appears as a series of four separate numbers separated by periods.","32-bit number that appears as a series of four separate numbers separated by periods.","D"],
+["The ________ allows a natural language expression, such as Google.com, to represent a numeric IP address.","uniform resource locator system","Internet protocol addressing schema","domain name system","assigned numbers and names (ANN) system","C"],
+["The address used by a browser to identify the location of content on the Web is called:","a domain name.","a uniform resource locator.","an IP address.","a file path.","B"],
+["Which of the following is not an advantage of client/server computing over centralized mainframe computing?","It is easy to expand capacity by adding servers and clients.","Each client added to the network increases the network's overall capacity and transmission speeds.","Client/server networks are less vulnerable, in part because the processing load is balanced over many powerful smaller computers.","There is less risk that a system will completely malfunction because backup or mirror servers can pick up the slack if one server goes down.","B"],
+["________ is a model of computing in which computer processing, storage, software, and other services are provided as a shared pool of virtualized resources over the Internet.","Client/server computing","P2P computing","Mobile computing","Cloud computing","D"],
+["Which of the following protocols is used to send mail to a server?","IMAP","FTP","HTTP","SSL","A"],
+["Where does TLS operate within TCP/IP?","between the Internet Layer and the Transport Layer","between the Transport Layer and the Application Layer","between the Network Interface Layer and the Transport Layer","between the Internet Layer and the Application Layer","B"],
+["Which of the following statements about cloud computing is not true?","A public cloud is typically used by companies with stringent privacy and security requirements.","Dropbox is an example of a public cloud.","Hybrid clouds offer both public and private cloud options.","A private cloud can be hosted internally or externally.","A"],
+["________ is used to allow remote login on another computer.","Telnet","FTP","HTTP","SSL","A"],
+["________ is a utility program that allows you to check the connection between your client and a TCP/IP network.","Ping","Telnet","Tracert","Finger","A"],
+["Which technology has enabled the Internet to grow exponentially to support millions of users, without overloading the network architecture?","fiber optics","Wi-Fi","IPv6","client/server computing","D"],
+["Which are specialized computers that interconnect the thousands of computers that make up the Internet in order to transmit message parcels along available communication paths?","routers","Web servers","IP servers","packet servers","A"],
+["Which of the following is a set of rules for transferring data?","protocol","packet","router","IP address","A"],
+["Which of the following is not a basic type of cloud computing service?","IaaS","PaaS","SaaS","FiOS","D"],
+["Which of the following are central directories that list all domain names currently in use for specific domains?","Web servers","root servers","client servers","DNS servers","B"],
+["Which of the following was the original purpose of the Internet?","to provide a network that would allow businesses to connect with consumers","to link large mainframe computers on different college campuses","to develop a military communications system that could withstand nuclear war","to enable government agencies to track civilian communications","B"],
+["Which utility program allows you to track the path of a message you send from your client to a remote computer on the Internet?","Telnet","Ping","IMAP","Tracert","D"],
+["Who wrote the first paper on packet switching networks?","J.C.R. Licklider","Ray Tomlinson","Leonard Kleinrock","Vint Cerf","C"],
+["Packet switching does not require a dedicated circuit.","T"],
+["FTP is the protocol that provides the Internet addressing scheme.","F"],
+["IPv6 provides for 132-bit IP addresses.","F"],
+["A private cloud is operated solely for the benefit of a single tenant.","T"],
+["Amazon Web Services is an example of cloud computing.","T"],
+["WWW is the Internet protocol used to transfer Web pages.","F"],
+["TLS is a protocol used to transfer files to and from a server.","F"],
+["Which organization coordinates the Internet's systems of unique identifiers, such as IP addresses and top-level domain systems?","IETF","IAB","W3C","ICANN","D"],
+["TCP/IP operates in which layer of Internet architecture?","Network Technology Substrate layer","Middleware Services layer","Transport Services and Representation Standards layer","Applications layer","C"],
+["The Web runs in which layer of Internet architecture?","Network Technology Substrate layer","Middleware Services layer","Transport Services and Representation Standards layer","Applications layer","D"],
+["The layer of Internet architecture that ties the applications to the communications network and includes such services as security and authentication is called the:","Network Technology Substrate layer.","Middleware Services layer.","Transport Services and Representation Standards layer.","Applications layer.","B"],
+["The backbone of the Internet is formed by:","Internet Exchange Points (IXPs).","Tier 1 ISPs.","Network Access Points (NAPs).","Metropolitan Area Exchanges (MAEs).","B"],
+["When talking about the physical elements of the Internet, the term redundancy refers to:","transmitting multiple copies of a single packet to safeguard against data loss.","the use of tiered high-speed switching computers to connect the backbone to regional and local networks.","delays in messages caused by the uneven flow of information through the network.","multiple duplicate devices and paths in a network built so that data can be rerouted if a breakdown occurs.","D"],
+["The ________ is a consortium of corporations, government agencies, and nonprofit organizations that monitors Internet policies and practices.","Internet Engineering Steering Group (IESG)","World Wide Web Consortium (W3C)","Internet Engineering Task Force (IETF)","Internet Society (ISOC)","D"],
+["The ________ helps define the overall structure of the Internet.","IAB","IESG","W3C","ITU","A"],
+["Which of the following is not true about the mobile platform?","Most smartphones use Intel chips.","The number of cell phones worldwide exceeds the number of PCs.","Over a third of the world's cell phones are smartphones.","Smartphones use flash memory chips.","A"],
+["Which Internet governance organization has the United States recently announced it would give up control over?","ICANN","IGF","NTIA","IANA","D"],
+["Internet traffic is predicted to do which of the following over the next five years?","decrease","double","triple","quadruple","C"],
+["The major hubs in the United States where the Internet backbone intersects with regional and local networks are now commonly referred to as Internet Exchange Points (IXPs).","T"],
+["T1 and T3 refer to international telephone standards for digital communication.","T"],
+["Bluetooth is an advanced form of DSL.","F"],
+["IANA is the organization currently in charge of assigning IP addresses.","T"],
+["Which of the following is not a concern about IoT?","the high cost of sensors","interoperability","security","privacy","A"],
+["How long does it take for 300,000 X-rays to be transmitted on a 100-gbps network?","10 seconds","1 minute","10 minutes","1 hour","B"],
+["What type of Internet access technology are Google and Facebook hoping to use to provide Internet access to remote parts of the world?","Bluetooth","drones","WLANs","DSL","B"],
+["Which of the following is not a limitation of the current Internet?","the continued reliance on cables and wires for connectivity","limited bandwidth, which causes congestion and cannot adequately handle video and voice traffic","architectural restrictions, which stipulate that numerous requests for the same file must each be answered individually","the difficulty in expanding capacity by adding servers and clients","D"],
+["Which of the following statements about fiber-optic cable is not true?","It transmits more data at faster speeds than coaxial or twisted pair cable.","It is thinner and lighter than coaxial or twisted pair cable.","As of 2014, a majority of U.S. homes have fiber connections.","Telecommunications firms have made substantial investments in cross-country fiber optic networks.","C"],
+["The major technologies used with wireless local area networks are:","Wi-Fi and Bluetooth.","Wi-Fi and WiMax.","Bluetooth and 3G.","WiMax and 3G.","A"],
+["Which IEEE 802.11 standard provides for throughput of up to 7 Gbps?","802.11ac","802.11ad","802.11ay","802.11ax","A"],
+["All of the following are involved in the effort to create standards for IoT except:","AllSeen Alliance.","Industrial Internet Consortium.","Open Interconnect Consortium.","W3C.","D"],
+["Which of the following refers to delays in messages caused by the uneven flow of information packets through the network?","redundancy","latency","Net neutrality","QOS","B"],
+["What country intends to be the first to use Project Loon to provide universal Internet access?","New Zealand","Sri Lanka","Ghana","Australia","B"],
+["Internet2 provides a nationwide 100 gigabit-per-second network.","T"],
+["WLAN-based Internet access derives from the same technological foundations as telephone-based wireless Internet access.","F"],
+["The Internet of Things is based on sensors that can collect data and connect to the Internet.","T"],
+["The first Web browser to make it possible to view documents on the Web with colored background, images, and animations was:","Netscape Navigator.","Mosaic.","Mozilla.","Internet Explorer.","B"],
+["In the address http://www.company.com/clients.html, which of the following is the top-level domain?",".com","company.com","www","http","A"],
+["You could expect to find all of the following services in a Web server software package except:","security services.","FTP.","search engine.","an RSS aggregator.","D"],
+["Which of the following is currently the most popular Web browser? (theo đáp án sách)","Internet Explorer","Safari","Chrome","Firefox","A"],
+["The concept behind document formatting had its roots in which of the following?","XML","SGML","HTML","GML","D"],
+["All of the following are characteristics of HTML5 except:","a video element that replaces plug-ins such as Flash, QuickTime, and RealPlayer.","use of CSS3.","ability to access built-in functionality of mobile devices, such as GPS and swiping.","support for digital rights management.","D"],
+["Cortana is a type of:","intelligent personal assistant.","widget.","gadget.","social network.","A"],
+["Which of the following is a Web application that enables Internet users to communicate with each other, although not in real time?","mobile messaging","online forum","SMS messaging","VoIP","B"],
+["Which of the following is not a mobile messaging application?","KakaoTalk","WhatsApp","Viber","Feedly","D"],
+["A(n) ________ is a Web application that allows users to easily add and edit content on a Web page.","wiki","podcast","blog","RSS feed","A"],
+["The protocol that enables the transmission of voice and other forms of audio communication over the Internet is called:","VoIP.","IPTP.","VTP.","IP.","A"],
+["Which source of e-commerce revenues has grown from nearly zero prior to 2007 to an estimated $128 billion in 2015?","B2G e-commerce","mobile B2C e-commerce","B2B e-commerce","social e-commerce","B"],
+["All of the following are true about iPhone apps except:","they are distributed through Apple's App Store.","they are cross-platform, open-source applications.","over 100 billion have been downloaded.","Apple's goal of offering apps is to increase sales of iPhones, iPads, and iPods.","B"]
+],
+/* ---------- CHƯƠNG 4 ---------- */
+[
+["Offline media is typically used for all of the following marketing activities except:","education.","exposure.","conversation.","branding.","C"],
+["The cost of hardware, software, and telecommunications services needed to build a website have ________ over the last decade.","increased dramatically","increased moderately","decreased dramatically","decreased slightly","C"],
+["Which type of e-commerce presence is best suited for creating an ongoing conversation with one's customers?","Web site","e-mail","social media","offline media","C"],
+["What are the two most important management challenges in building a successful e-commerce presence?","developing a clear understanding of business objectives and knowing how to choose the right technology to achieve those objectives","having an accurate understanding of your business environment and an achievable business plan","building a team with the right skill sets and closely managing the development process","identifying the key components of your business plan and selecting the right software, hardware, and infrastructure","A"],
+["In order from beginning to end, the major steps in the SDLC are:","systems analysis/planning; systems design; building the system; testing; and implementation.","systems design; testing; building the system; and implementation.","systems analysis/planning; systems design; building the system; implementation; and testing.","systems analysis/planning; implementation; building the system; and testing.","A"],
+["________ are the types of information systems capabilities needed to meet business objectives.","Information requirements","System functionalities","System design specifications","Physical design specifications","B"],
+["Which basic system functionality is used to display goods on a website?","product database","digital catalog","shopping cart system","customer database system","B"],
+["Which system functionality must your website have in order to personalize or customize a product for a client?","an ad server","a site tracking and reporting system","an inventory management system","customer on-site tracking","D"],
+["Which are the two main components of a systems design?","logical design and physical design","behavioral design and technological design","business objectives and technology requirements","front-end systems and back-end systems","A"],
+["________ help you engage your customers in a conversation.","Shopping carts","Product databases","On-site blogs","Site tracking and reporting systems","C"],
+["Which of the following is not one of the basic business objectives for an e-commerce site?","display goods","execute a transaction","provide production and supplier links","optimize system architecture","D"],
+["All of the following are basic information requirements for a product database except:","product descriptions.","stock numbers.","customer ID numbers.","inventory levels.","C"],
+["________ typically include a data flow diagram to describe the flow of information for an e-commerce site.","Physical designs","Logical designs","Testing plans","Co-location plans","B"],
+["Which of the following details the actual hardware components to be used in a system?","architecture plan","system functionalities plan","logical design","physical design","D"],
+["Which of the following verifies that the business objectives of the system as originally conceived are in fact working?","system testing","acceptance testing","unit testing","implementation testing","B"],
+["Which of the following involves testing a site program's modules one at a time?","system testing","acceptance testing","unit testing","implementation testing","C"],
+["Most of the time required to maintain an e-commerce site is spent on:","debugging code.","responding to emergency situations.","general administration and making changes and enhancements to the system.","changes in reports, data files, and links to backend databases.","C"],
+["All of the following are simple steps for optimizing web page content that can reduce response times except:","reducing unnecessary HTML comments.","segmenting computer servers to perform dedicated functions.","using more efficient graphics.","avoiding unnecessary links to other pages on the site.","B"],
+["Which is the minimum system architecture requirement for an e-commerce website that processes orders?","single-tier architecture","two-tier architecture","three-tier architecture","multi-tier architecture","B"],
+["All of the following offer website building tools except:","Weebly.","Google Sites.","WordPress.","Apache.","D"],
+["All of the following are major players in hosting/co-location/cloud services except:","GoDaddy.","WordPress.","Rackspace.","CenturyLink.","B"],
+["Which form of testing compares a control page with one that is very different?","template test","new concept test","funnel test","system test","B"],
+["A template test is a form of which type of testing?","unit testing","system testing","acceptance testing","A/B testing","D"],
+["When using multivariate testing, if you wish to test two different versions of an image, a button, and a piece of text, how many combinations will you need to test?","2","4","6","8","D"],
+["The process of comparing a website with that of its competitors in terms of response speed, quality of layout, and design is known as:","split testing.","funnel testing.","benchmarking.","system testing.","C"],
+["The systems development life cycle methodology that can be used to create an e-commerce Web site has five major steps.","T"],
+["When developing an e-commerce presence, it is important to understand that the business must drive technology decisions, not the reverse.","T"],
+["Using prebuilt templates is typically one of the most expensive choices when building an e-commerce site.","F"],
+["The annual maintenance cost for a Web site is typically much lower than its development cost.","F"],
+["Two-tier architecture typically includes a Web server and a database server.","T"],
+["Apache Web server software works with Linux and Unix operating systems.","T"],
+["All of the following are basic functionality provided by web servers except:","site management tools.","data capture tools.","security services.","a shopping cart.","D"],
+["Which of the following is used to process certificates and private/public key information?","HTTP","Secure Sockets Layer/Transport Layer Security","File Transfer Protocol","data capture tools","B"],
+["Which of the following would you use to verify that links on web pages are valid?","HTTP","FTP","data capture tools","site management tools","D"],
+["Which of the following is an example of a CMS?","Apache","WordPress","Dreamweaver CC","Webtrends Analytics","B"],
+["Advantages of dynamic page generation include all of the following except:","lowered menu costs.","market segmentation.","nearly cost-free price discrimination.","client-side execution of programming.","D"],
+["Which of the following cannot be used to retrieve objects from a database?","CGI","ASP","JSP","HTML","D"],
+["Which type of application server monitors and controls access to a main web server and implements firewall protection?","proxy server","list server","groupware server","mail server","A"],
+["Which technology is used to separate the design and presentation of content from the content creation process?","Apache web server","proxy server","shopping cart","CMS","D"],
+["MySQL is which of the following?","open source database software","a scripting language embedded in HTML documents","Web server software","Web site analytics software","A"],
+["All of the following are basic functionality provided by e-commerce merchant server software except:","a product catalog.","marketing software.","a shopping cart.","credit card processing.","B"],
+["Which of the following is not an open source software tool?","WebSphere","Apache","MySQL","PHP","A"],
+["Which standard makes it possible to access data from any application regardless of the database and operating system software being used?","CGI","ODBC","MySQL","HTTP","B"],
+["The Web server software used has a significant impact on how a Web site's Web pages look on a user's computer.","F"],
+["Prior to the development of e-commerce, Web sites primarily delivered static HTML pages.","T"],
+["Dynamic page generation lowers menu costs.","T"],
+["A list server can be used to manage e-mail marketing campaigns.","T"],
+["The term stateless refers to the fact that:","no one government entity controls the Internet.","the server does not have to maintain an ongoing dedicated interaction with the client computer.","system performance degrades as more simultaneous users require service.","Web servers may maintain multiple instances of server software to handle requests.","B"],
+["Which type of site typically needs a high percentage of secure pages?","Web services","customer self-service","trading","publishing/subscription","C"],
+["Which of the following is not a main factor in determining the overall demand on an e-commerce site?","file sizes of Web pages being served","number of simultaneous users in peak periods","speed of legacy applications that are needed to supply data to Web pages","whether content is dynamic or static","A"],
+["All of the following are steps one can take to right-size a website's hardware platform and meet demands for service except:","scaling hardware vertically.","scaling hardware horizontally.","replacing static pages with dynamically generated pages.","improving processing architecture.","C"],
+["All of the following are methods of improving the processing architecture of a website except:","separating static content from dynamic content.","optimizing ASP code.","optimizing the database schema.","adding Web servers.","D"],
+["Upgrading a server from a single processor to multiple processors is an example of scaling a site horizontally.","F"],
+["Storing HTML pages in RAM rather than on a server's hard drive is an inexpensive way to fine-tune the processing architecture of a Web site.","T"],
+["Django is based on which of the following?","PHP","Python","Perl","Ruby on Rails","B"],
+["Ruby on Rails is based on which of the following philosophies?","SDLC","CoC","LAMP","Ajax","B"],
+["Which of the following is the most commonly used server-side scripting language?","Ruby on Rails","Django","PHP","Perl","C"],
+["All of the following are website design features that annoy customers except:","pop-under ads.","splash pages.","pop-up ads.","redundant navigation.","D"],
+["All of the following are important factors in search engine optimization except:","selecting keywords and page titles.","identifying market niches for your services or products.","buying search engine ads.","adhering to privacy policies.","D"],
+["________ provides a set of standards for communicating between a browser and a program running on a server that allows for interaction between the user and server.","CGI","ColdFusion","JavaScript","VBScript","A"],
+["________ is a programming language invented by Netscape used to control the objects on an HTML page and handle interactions with the browser.","VBScript","ActiveX","ColdFusion","JavaScript","D"],
+["The primary way a website personalizes the content presented to a visitor is through the use of:","privacy policies.","cookies.","accessibility rules.","site management tools.","B"],
+["Which of the following is not part of the LAMP open source Web development model?","Linux","Apache","Microsoft IIS","PHP","C"],
+["Django follows the ________ programming principle.","CoC","WYSIWYG","DRY","LAMP","C"],
+["PHP is an open source, general purpose scripting language that is most frequently used in server-side Web applications to generate dynamic Web page content.","T"],
+["All of the following are key design principles of responsive Web design except:","flexible grid-based layouts.","media queries.","coding by convention.","flexible images and media.","C"],
+["Which is a server-side technique that detects the attributes of the device making the request, and using predefined templates, loads a version of a site optimized for the device?","LAMP","AWD","mobile first design","RoR","B"],
+["Which of the following statements about responsive Web design (RWD) is not true?","RWD works best for sites that have complex functionality.","RWD tools include HTML5 and CSS3.","RWD makes it possible to design a Web site that automatically adjusts its layout according to the screen resolution of the device.","RWD can be costly.","A"],
+["Building which of the following is the most expensive path to creating a mobile presence?","native app","mobile Web site","mobile Web app","hybrid HTTP","A"],
+["Which of the following statements about mobile Web sites is not true?","Mobile Web sites run on a firm's servers, just like a traditional Web site.","Mobile Web sites can be built using standard Web tools such as server-side HTML, Linux, PHP and SQL.","Generally, mobile Web sites operate more quickly than traditional Web sites viewed on a desktop computer connected to a broadband office network.","Most large firms today have mobile Web sites.","C"],
+["Beginning the e-commerce development process with a mobile presence rather than a desktop Web site is referred to as which of the following?","RWD","AWD","mobile first design","RESS","C"],
+["A native app is one designed to specifically operate using a mobile device's hardware and operating system.","T"],
+["Mobile Web apps are typically built using HTML5 and Java.","T"]
+],
+/* ---------- CHƯƠNG 5 ---------- */
+[
+["Confidentiality is sometimes confused with:","privacy.","authenticity.","integrity.","nonrepudiation.","A"],
+["________ refers to the ability to ensure that e-commerce participants do not deny their online actions.","Nonrepudiation","Authenticity","Availability","Integrity","A"],
+["________ refers to the ability to identify the person or entity with whom you are dealing on the Internet.","Nonrepudiation","Authenticity","Availability","Integrity","B"],
+["Which of the following is an example of an integrity violation of e-commerce security?","A website is not actually operated by the entity the customer believes it to be.","A merchant uses customer information in a manner not intended by the customer.","A customer denies that he or she is the person who placed the order.","An unauthorized person intercepts an online communication and changes its contents.","D"],
+["________ refers to the ability to ensure that an e-commerce site continues to function as intended.","Nonrepudiation","Authenticity","Availability","Integrity","C"],
+["Which of the following is an example of an online privacy violation?","your e-mail being read by a hacker","your online purchasing history being sold to other merchants without your consent","your computer being used as part of a botnet","your e-mail being altered by a hacker","B"],
+["________ refers to the ability to ensure that messages and data are only available to those authorized to view them.","Confidentiality","Integrity","Privacy","Availability","A"],
+["Typically, the more security measures added to an e-commerce site, the faster and easier it becomes to use.","F"],
+["All of the following experienced high-profile data breaches in 2015 except:","CVS.","Walgreens.","Amazon.","Experian.","C"],
+["Bitcoins are an example of:","digital cash.","virtual currency.","a stored value payment system.","an EBPP system.","A"],
+["The overall rate of online credit card fraud is ________ of all online card transactions.","less than 1%","around 5%","around 10%","around 15%","A"],
+["Which of the following has the Internet Advertising Bureau urged advertisers to abandon?","HTML","HTML5","Adobe Flash","Adobe Acrobat","C"],
+["Accessing data without authorization on Dropbox is an example of which of the following?","social network security issue","cloud security issue","mobile platform security issue","sniffing","B"],
+["All of the following are prominent hacktivist groups except:","Anonymous.","LulzSec.","Impact Team.","Avid Life.","D"],
+["Conficker is an example of a:","virus","worm","Trojan horse","botnet","B"],
+["Which of the following is the leading cause of data breaches?","theft of a computer","accidental disclosures","hackers","DDoS attacks","C"],
+["Software that is used to obtain private user information such as a user's keystrokes or copies of e-mail is referred to as:","spyware.","a backdoor.","browser parasite.","adware.","A"],
+["In 2016, Yahoo revealed that it had experienced which of the following?","a high-profile data breach","a DDoS attack that shut down its website","a hacktivist attack to protest its employment policies","a browser parasite","A"],
+["What is the most frequent cause of stolen credit cards and card information today?","lost cards","the hacking and looting of corporate servers storing credit card information","sniffing programs","phishing attacks","B"],
+["Which dimension(s) of security is spoofing a threat to?","integrity","availability","integrity and authenticity","availability and integrity","C"],
+["________ is not an example of malicious code.","Scareware","A Trojan horse","A bot","A sniffer","D"],
+["The attack on Dyn, Twitter, Amazon, and other major organizations in October 2016 is an example of which of the following?","SQL injection attack","browser parasite","DDoS attack","MitM attack","C"],
+["Angler is an example of:","a worm.","an exploit kit.","phishing.","hacktivism.","B"],
+["Malware that comes with a downloaded file requested by a user is called a:","Trojan horse.","backdoor.","drive-by download.","PUP.","C"],
+["Which of the following is not an example of a PUP?","adware","browser parasite","drive-by download","spyware","C"],
+["Which of the following was designed to cripple Iranian nuclear centrifuges?","Stuxnet","Flame","Snake","Storm","A"],
+["Automatically redirecting a web link to a different address is an example of:","sniffing.","social engineering.","pharming.","DDoS attack.","C"],
+["Shellshock is an example of which of the following?","mobile malware","software vulnerability","botnet","Trojan horse","B"],
+["According to Ponemon Institute's 2015 survey, which of the following was not among the causes of the costliest cybercrimes?","malicious insiders","malicious code","denial of service","botnets","D"],
+["________ typically attack governments, organizations, and sometimes individuals for political purposes.","Crackers","White hats","Grey hats","Hacktivists","D"],
+["A worm does not need to be activated by a user in order for it to replicate itself.","T"],
+["A Trojan horse appears to be benign, but then does something other than expected.","T"],
+["Phishing attacks rely on browser parasites.","F"],
+["CryptoLocker is an example of ransomware.","T"],
+["Spoofing a Web site is a threat to the integrity of the Web site.","T"],
+["Exploit kits are often rented or sold as a commercial product.","T"],
+["Vishing attacks exploit SMS messages.","F"],
+["Next generation firewalls provide all of the following except:","an application-centric approach to firewall control.","the ability to identify applications regardless of the port, protocol, or security evasion tools used.","the ability to automatically update applications with security patches.","the ability to identify users regardless of the device or IP address.","C"],
+["Symmetric key cryptography is also known as:","public key cryptography.","secret key cryptography.","PGP.","PKI.","B"],
+["All the following statements about symmetric key cryptography are true except:","both the sender and the receiver use the same key to encrypt and decrypt a message.","the Data Encryption Standard is a symmetric key encryption system.","symmetric key cryptography is computationally slower.","symmetric key cryptography is a key element in digital envelopes.","C"],
+["The Data Encryption Standard uses a(n) ________-bit key.","8","56","256","512","B"],
+["All of the following statements about public key cryptography are true except:","public key cryptography uses two mathematically related digital keys.","public key cryptography ensures authentication of the sender.","public key cryptography does not ensure message integrity.","public key cryptography is based on the idea of irreversible mathematical functions.","B"],
+["________ is the current standard used to protect Wi-Fi networks.","WEP","TLS","WPA2","WPA3","C"],
+["All of the following statements about PKI are true except:","the term PKI refers to the certification authorities and digital certificate procedures that are accepted by all parties.","PKI is not effective against insiders who have legitimate access to corporate systems including customer information.","PKI guarantees that the verifying computer of the merchant is secure.","the acronym PKI stands for public key infrastructure.","C"],
+["A digital certificate contains all of the following except the:","subject's private key.","subject's public key.","digital signature of the certification authority.","digital certificate serial number.","A"],
+["Which dimension of e-commerce security does not involve encryption?","confidentiality","availability","message integrity","nonrepudiation","B"],
+["All of the following are methods of securing channels of communication except:","SSL/TLS.","certificates.","VPN.","FTP.","D"],
+["A ________ is a hardware or software component that acts as a filter to prevent unwanted packets from entering a network.","firewall","virtual private network","proxy server","PPTP","A"],
+["Proxy servers are also known as:","firewalls.","application gateways.","dual home systems.","packet filters.","C"],
+["All of the following are used for authentication except:","digital signatures.","certificates of authority.","biometric devices.","packet filters.","D"],
+["An intrusion detection system can perform all of the following functions except:","examining network traffic.","setting off an alarm when suspicious activity is detected.","checking network traffic to see if it matches certain patterns or preconfigured rules.","blocking suspicious activity.","D"],
+["Which of the following is not an example of an access control?","firewalls","proxy servers","digital signatures","login passwords","C"],
+["Which of the following statements is not true?","A VPN provides both confidentiality and integrity.","A VPN uses both authentication and encryption.","A VPN uses a dedicated secure line.","The primary use of VPNs is to establish secure communications among business partners.","C"],
+["Which of the following statements is not true?","Apple's Touch ID stores a user's actual fingerprint.","Biometric devices reduce the opportunity for spoofing.","A retina scan is an example of a biometric device.","Biometric data stored on an iPhone is encrypted.","A"],
+["A fingerprint scan is an example of which of the following?","biometrics","encryption","IDS","firewall","A"],
+["Which is the most common protocol for securing a digital channel of communication?","DES","SSL/TLS","VPN","HTTP","B"],
+["SSL/TLS cannot provide irrefutability.","T"],
+["The easiest and least expensive way to prevent threats to system integrity is to install anti-virus software.","T"],
+["What is the first step in developing an e-commerce security plan?","Create a security organization.","Develop a security policy.","Perform a risk assessment.","Perform a security audit.","C"],
+["To allow lower-level employees access to the corporate network while preventing them from accessing private human resources documents, you would use:","access controls.","an authorization management system.","security tokens.","an authorization policy.","B"],
+["Which of the following statements is not true?","Most states require companies that maintain personal data on their residents to publicly disclose when a security breach has occurred.","The USA Patriot Act broadly expanded law enforcement's investigative and surveillance powers.","The Cybersecurity Information Sharing Act was strongly supported by most large technology companies and privacy advocates.","The Federal Trade Commission has asserted that it has authority over corporations' data security practices.","C"],
+["All of the following are examples of social/mobile peer-to-peer payment systems except:","Venmo.","Bill Me Later.","Square Cash.","Google Wallet.","B"],
+["All of the following statements about Apple Pay are true except which of the following?","Apple Pay is subject to recent regulations issued by the Bureau of Consumer Financial Protection applicable to GPR transactions.","Apple Pay is based on Touch ID biometric fingerprint scanning.","Apple Pay can be used for mobile payments at the point of sale at a physical store.","Apple Pay relies on NFC chip technology.","A"],
+["PayPal is an example of a(n):","online stored value payment system.","digital checking system.","accumulating balance system.","digital credit card system.","A"],
+["PCI-DSS is a standard established by which of the following?","the banking industry","the credit card industry","the federal government","the retail industry","B"],
+["Which of the following is not a major trend in e-commerce payments in 2016-2017?","Mobile retail payment volume decreases.","PayPal remains the most popular alternative payment method.","Google refocuses Google Wallet solely on sending and receiving money.","Payment by credit and/or debit card remains the dominant form of online payment.","A"],
+["All of the following are limitations of the existing online credit card payment system except:","poor security.","cost to consumers.","cost to merchant.","social equity.","B"],
+["Linden Dollars, created for use in Second Life, are an example of:","digital cash.","virtual currency.","EBPP.","peer-to-peer payment systems.","B"],
+["Which is a set of short-range wireless technologies used to share information among devices within about two inches of each other?","DES","NFC","IM","text messaging","B"],
+["Apple Pay uses near field communication (NFC) chips.","T"],
+["Digital cash is legal tender that is instantly convertible into other forms of value without the intermediation of any third parties.","F"],
+["There is a finite number of Bitcoins that can be created.","T"],
+["In 2015, online bill payment accounted for ________ of all bill payments, while paper checks accounted for ________.","less than 10%; less than 25%","about 25%; about 10%","more than 50%; less than 20%","100%; 0%","C"]
+],
+/* ---------- CHƯƠNG 6 ---------- */
+[
+["Around ________% of households in the United States have broadband access to the Internet.","45","55","75","85","C"],
+["Which online advertising format involved the least amount of spending in 2016?","search","classifieds","rich media","e-mail","D"],
+["Which of the following is not one of the main stages of the online purchasing process?","post-purchase service and loyalty","awareness","engagement","conversation","D"],
+["In 2016, what was the approximate Internet penetration rate for individuals with less than a high-school education?","25%","33%","66%","75%","C"],
+["All of the following are online communications used to support the evaluation of alternatives stage of the consumer decision process except:","search engines.","online catalogs.","social networks.","targeted banner ads.","D"],
+["Online buyers constitute approximately ________% of the online Internet audience.","67","77","87","97","B"],
+["In modeling online consumer behavior, the concept of 'consumer skills' refers to the:","education level of the consumer.","communication skills of the consumer.","knowledge consumers have about how to conduct online transactions.","product evaluation skills of the consumer.","C"],
+["In the early years of e-commerce, prior to 2000, single, white, young college-educated males with high income dominated the Internet in terms of percentage of Internet usage.","T"],
+["Consumers choose the online channel primarily because it offers lower prices.","T"],
+["Online traffic is driven by offline brands and shopping.","T"],
+["The majority of online shoppers find vendors by clicking on display ads.","F"],
+["Research shows that the two most important factors shaping the decision to purchase online are utility and trust.","T"],
+["Google introduced ________ to its search algorithm to weed out low-quality sites from search results.","Penguin","Hummingbird","Panda","Knowledge Graph","C"],
+["Which form of online advertising is expected to grow the fastest between 2016 and 2020?","paid search","sponsorships","search engines","rich media","D"],
+["Which is not one of the four main methods advertisers use to behaviorally target ads?","Nielsen ratings","data collected from social networks","integration of online data with offline data","clickstream data","A"],
+["Which search engine algorithm update enables Google to evaluate an entire sentence rather than just a key word?","Panda","Penguin","Hummingbird","Graph Search","C"],
+["Which of the following is not true about search engine advertising?","Spending on search engine advertising constitutes over 45% of all online advertising spending.","The top three search engine providers supply over 95% of all online searches.","The click-through rate for search engine marketing has been steady over the years.","Search engine advertising is the fastest growing type of online advertising.","D"],
+["Which of the following is not a practice that degrades the results and usefulness of search engines?","social search","link farms","content farms","click fraud","A"],
+["Amazon's Associates program is an example of which of the following?","viral marketing","local marketing","affiliate marketing","lead generation marketing","C"],
+["Ad blockers operate in a manner similar to which of the following?","anti-virus software","firewalls","Flash cookies","anonymous browsing","B"],
+["Which of the following is not a primary source of ad fraud?","browser extensions that insert ads into a premium publisher's website and then list the ads on a programmatic ad exchange","ad targeting firms that create bots that imitate the behavior of real shoppers and then charge advertisers","botnets hired by publishers to click on web pages to create phony traffic","native advertising that is displayed on a social media site","D"],
+["The percentage of all e-mail that is spam averaged around ________% in 2016.","53","63","73","83","A"],
+["Which of the following statements about CAN-SPAM is not true?","CAN-SPAM went into effect in January 2004.","CAN-SPAM prohibits unsolicited e-mail (spam).","CAN-SPAM prohibits the use of deceptive subject lines and false headers.","Large spammers are among CAN-SPAM's biggest supporters.","B"],
+["Which of the following statements about Canada's anti-spam law is not true?","Canada's law is based on an opt-in model.","The law has no impact on companies located within the United States.","The first phase of the law went into effect in 2014.","The law applies to e-mail, texts, and social media messaging.","B"],
+["Which is the most important tool in establishing a relationship with the customer?","company website","company CRM system","Facebook","search engine display ads","A"],
+["All of the following are 'traditional' online marketing tools except:","affiliate marketing.","e-mail and permission marketing.","social marketing.","sponsorship marketing.","C"],
+["All of the following are among those most frequently affected by ad-blocking except:","gaming sites.","newsgroup/forums.","social network sites.","online retailers.","D"],
+["The Nike iD program is an example of which marketing technique?","customer co-production","transactive content","price discrimination","permission marketing","A"],
+["The incremental cost of building the next unit of a good is called the:","Law of One Price.","variable cost.","marginal cost.","fixed cost.","C"],
+["Which of the following statements about a free pricing strategy is false?","Free products and services can knock out potential and actual competitors.","The free pricing strategy was born in the early days of the Web.","It is difficult to convert free customers into paying customers.","Free products and services can help build market awareness.","B"],
+["Creating multiple variations of information goods and selling these to different market segments at different prices is called:","bundling.","customization.","dynamic pricing.","versioning.","D"],
+["All of the following are fixed price strategies except:","bundling.","versioning.","free pricing.","yield management.","D"],
+["Which involves getting customers to pass along a company's marketing message to friends, family, and colleagues?","affiliate marketing","viral marketing","native advertising","lead generation marketing","B"],
+["Google's AdSense is an example of which of the following?","context advertising","SEO","programmatic advertising","viral marketing","A"],
+["Which is based on the idea of complete price transparency in a perfect information marketplace?","the Law of One Price","dynamic pricing","price discrimination","versioning","A"],
+["Which industry accounts for the highest percentage of spending on online advertising?","financial services","retail","automotive","entertainment","B"],
+["Which of the following statements about native advertising is not true?","Native advertising is controversial.","Native advertising is a new form of advertising found only online.","Native advertising is growing rapidly, especially on social networks.","Consumers look at native ads much more frequently than display ads.","B"],
+["Which is an automated, auction-based method for matching supply and demand for online display ads?","retargeting","behavioral targeting","programmatic advertising","keyword advertising","C"],
+["Research has found that of all the standard formats of display ads, leaderboard ads are the most effective at getting and holding a user's attention.","F"],
+["The highest amount of online advertising spending is for online video ads.","F"],
+["Evidence suggests that real-time customer chat increases the dollar value of transactions.","T"],
+["Consumers tend to look at native ads more frequently than they look at display ads.","T"],
+["Lead generation marketing firms specialize in inbound marketing.","T"],
+["An ad is considered viewable if half of the ad can be viewed for at least two consecutive seconds.","T"],
+["The concept of 'customer satisfaction' is broader than the concept of 'customer experience.'","F"],
+["Bundling is the process of selling two or more products together for a price that is less than the sum of the two products' individual prices.","T"],
+["Which would you use as a framework for working with your company's big data sets?","data warehouse","Hadoop","SQL","profiling","B"],
+["Which statement about the Internet's impact on marketing is not true?","The Internet has broadened the scope of marketing communications.","The Internet has decreased the impact of brands.","The Internet has increased the richness of marketing communications.","The Internet has expanded the information intensity of the marketplace.","B"],
+["Which feature of e-commerce technology has reduced the cost of delivering marketing messages and receiving feedback from users?","ubiquity","richness","information density","universal standards","D"],
+["Which feature of e-commerce technology allows fine-grained, highly detailed information on consumers' real-time behavior to be gathered and analyzed?","personalization/customization","information density","ubiquity","interactivity","B"],
+["The richness made possible by e-commerce technologies does which of the following?","It reduces the cost of delivering marketing messages and receiving feedback from users.","It allows consumers to become co-producers of the goods and services being sold.","It allows video, audio, and text to be integrated into a single marketing message and consuming experience.","It enables worldwide customer service and marketing communications.","C"],
+["For a website that has 1 million visitors a month, and where, on average, a visitor makes five page requests per visit, there will be ________ entries in the transaction log each month.","50,000","500,000","5 million","50 million","C"],
+["All of the following statements about cookies are true except:","cookies can be used to create cross-site profiles of users.","the data typically stored in cookies includes a unique ID and e-mail address.","cookies make shopping carts possible by allowing a site to keep track of a user's actions.","the more cookies are deleted, the less accurate ad server metrics become.","B"],
+["A web beacon is:","a cookie that carries a virus.","an executable cookie.","an automated applet for performing web searches.","a tiny graphics file embedded in an e-mail or web page.","D"],
+["________ is an industry-standard database query and manipulation language.","SQL","PHP","DBMS","JSP","A"],
+["A ________ is a repository of customer information that records all of the contacts a customer has with a firm, and generates a customer profile.","customer service chat system","CRM system","data warehouse","transactive content system","B"],
+["The marketing technique known as ________ involves merchants offering products or services for a very low price for a short period of time.","long tail marketing","flash marketing","yield management","bait-and-switch","B"],
+["To answer a question such as 'At what time of day does our company sell the most products?' you would use ________ data mining.","query-driven","customer profiling","model-driven","behavioral","A"],
+["Transaction logs are built into Web server software.","T"],
+["Cookies, when combined with Web beacons, can be used to create cross-site profiles.","T"],
+["If you want to determine the size of your website's audience, the metric you will use for the most accurate measurement will be:","page views.","unique visitors.","hits.","reach.","B"],
+["Impressions are a measure of the:","number of times an ad is clicked.","number of times an ad is served.","number of http requests.","number of pages viewed.","B"],
+["View-through rate measures the ________ response rate to an ad.","30-minute","24-hour","7-day","30-day","D"],
+["Uber has been criticized for using which of the following?","flash marketing","bundling","surge pricing","freemium","C"],
+["Hits are a measure of the:","number of times an ad is clicked.","number of times an ad is served.","number of HTTP requests.","number of pages viewed.","C"],
+["Purchasing an online ad on a CPA basis means that the advertiser:","pays for impressions in 1,000 unit lots.","pays a pre-negotiated fee for each click an ad receives.","pays only for those users who perform a specific action, such as registering, purchasing, etc.","exchanges something of equal value for the ad space.","C"],
+["eCPM measures the ROI of an ad by dividing the total earnings of the ad by which of the following?","the total number of impressions","the total number of impressions in hundreds","the total number of impressions in thousands","the total number of impressions in millions","C"],
+["Which measures the average length of stay at a website?","loyalty","stickiness","page views","retention rate","B"],
+["Acquisition rate is a measure of the:","percentage of visitors who indicate an interest in a site's products by registering or visiting a product's pages.","percentage of visitors who become customers.","percentage of existing customers who continue to buy on a regular basis.","percentage of shoppers who do not return within a year after their initial purchase.","A"],
+["Recency refers to the:","percentage of customers who do not return during the next year after an initial purchase.","time elapsed since the last visit made by a customer.","percentage of existing customers who continue to buy on a regular basis.","percentage of customers who return to the site within a year to make additional purchases.","B"],
+["Conversion rate is a measure of the:","percentage of visitors who indicate an interest in a site's products by registering or visiting a product's pages.","percentage of visitors who become customers.","percentage of existing customers who continue to buy on a regular basis.","percentage of shoppers who do not return within a year after their initial purchase.","B"],
+["Which measures the ratio of items purchased to product views?","conversion rate","cart conversion rate","browse-to-buy ratio","view-to-cart ratio","C"],
+["Which measures the percentage of e-mails that could not be delivered?","abandonment rate","unsubscribe rate","bounce-back rate","attrition rate","C"],
+["Which is the most meaningful metric for video ads?","view time","click-through rate","completion rate","skip rate","C"],
+["Which measures the percentage of customers who purchase once, but never return within a year?","retention rate","attrition rate","loyalty rate","conversion rate","B"]
+]
+];
+
+const NAMES=["Chương 1 – Tổng quan E-commerce","Chương 2 – Mô hình kinh doanh","Chương 3 – Hạ tầng Internet & Web","Chương 4 – Xây dựng website","Chương 5 – Bảo mật & thanh toán","Chương 6 – Marketing & quảng cáo"];
+const CH = RAW.map((c,ci)=>c.map((r,i)=>r.length==2
+  ?{ch:ci,id:ci+'-'+i,q:r[0],o:["True (Đúng)","False (Sai)"],a:r[1]=="T"?0:1}
+  :{ch:ci,id:ci+'-'+i,q:r[0],o:r.slice(1,5),a:"ABCD".indexOf(r[5])}));
+
+const $=s=>document.querySelector(s), app=$('#app');
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const L="ABCD";
+let S={};
+
+function home(){
+  clearInterval(S.timer);S={};
+  app.innerHTML=`<h1>📚 E-commerce Quiz</h1><p class="sub">Ngân hàng ${CH.reduce((n,c)=>n+c.length,0)} câu hỏi · 6 chương</p>
+  <div class="modes">
+    <button class="card mode" onclick="studyMenu()"><b>📖 Chế độ học</b>Học theo từng chương, xem đáp án đúng/sai ngay sau mỗi câu.</button>
+    <button class="card mode" onclick="startTest()"><b>📝 Chế độ kiểm tra</b>60 câu: mỗi chương 10 câu ngẫu nhiên. Nộp bài mới biết kết quả.</button>
+  </div>`;
+}
+function studyMenu(){
+  app.innerHTML=`<div class="top"><h2>Chọn chương để học</h2><button onclick="home()">← Trang chủ</button></div>
+  <div class="card"><label class="chk"><input type="checkbox" id="shuf" checked> Trộn thứ tự câu hỏi</label></div>
+  <div class="grid">${CH.map((c,i)=>`<button class="card chbtn" onclick="startStudy(${i})"><b>${NAMES[i]}</b><span>${c.length} câu</span></button>`).join('')}</div>`;
+}
+function startStudy(ci,customList){
+  const shuf=$('#shuf')?$('#shuf').checked:true;
+  S={mode:'study',ci,list:customList||(shuf?shuffle(CH[ci]):CH[ci].slice()),i:0,ans:[],wrong:[]};
+  render();
+}
+function startTest(){
+  S={mode:'test',list:CH.flatMap(c=>shuffle(c).slice(0,10)),i:0,ans:[],t0:Date.now()};
+  S.timer=setInterval(()=>{const e=$('#clock');if(e)e.textContent=fmt((Date.now()-S.t0)/1000|0)},1000);
+  render();
+}
+const fmt=s=>String(s/60|0).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+
+function render(){
+  const q=S.list[S.i],n=S.list.length,test=S.mode=='test',chosen=S.ans[S.i],locked=!test&&chosen!=null;
+  const title=test?`📝 Kiểm tra · ${NAMES[q.ch].split(' – ')[0]}`:`📖 ${NAMES[S.ci]}`;
+  let h=`<div class="top"><b>${title}</b><span>${test?`⏱ <span id="clock">${fmt((Date.now()-S.t0)/1000|0)}</span> · `:''}Câu ${S.i+1}/${n}</span></div>
+  <div class="bar"><i style="width:${(S.i+1)/n*100}%"></i></div><div class="card">
+  <div class="tag">${q.o.length==2?'Đúng / Sai':'Trắc nghiệm'}</div><p class="q">${esc(q.q)}</p>`;
+  q.o.forEach((o,k)=>{
+    let cls='opt';
+    if(locked){if(k==q.a)cls+=' ok';else if(k==chosen)cls+=' bad'}
+    else if(chosen==k)cls+=' sel';
+    h+=`<button class="${cls}" ${locked?'disabled':''} onclick="pick(${k})">${q.o.length==4?`<b>${L[k]}.</b> `:''}${esc(o)}</button>`;
+  });
+  if(locked)h+=chosen==q.a?`<div class="fb ok">✔ Chính xác!</div>`:`<div class="fb bad">✘ Sai. Đáp án đúng: ${q.o.length==4?L[q.a]+'. ':''}${esc(q.o[q.a])}</div>`;
+  h+=`</div><div class="nav"><button onclick="go(-1)" ${S.i==0?'disabled':''}>← Trước</button>`;
+  if(test)h+=`<button class="pri" onclick="submit()">Nộp bài (${S.ans.filter(x=>x!=null).length}/${n})</button>`;
+  else if(S.i==n-1)h+=`<button class="pri" onclick="finishStudy()">Hoàn thành</button>`;
+  h+=`<button onclick="go(1)" ${S.i==n-1?'disabled':''}>Tiếp →</button></div>`;
+  if(test){h+=`<div class="card"><div class="tag">Bảng câu hỏi</div><div class="pal">${S.list.map((_,k)=>`<button class="${S.ans[k]!=null?'done':''} ${k==S.i?'cur':''}" onclick="S.i=${k};render()">${k+1}</button>`).join('')}</div></div>
+  <div class="row"><button onclick="if(confirm('Thoát bài kiểm tra?'))home()">Thoát</button></div>`}
+  else h+=`<div class="row"><button onclick="studyMenu()">← Đổi chương</button></div>`;
+  app.innerHTML=h;scrollTo(0,0);
+}
+function pick(k){
+  const q=S.list[S.i];
+  if(S.mode=='study'&&S.ans[S.i]!=null)return;
+  S.ans[S.i]=k;
+  render();
+  if(S.mode=='test'&&S.i<S.list.length-1){/* giữ nguyên câu, người dùng tự bấm Tiếp */}
+}
+function go(d){S.i=Math.max(0,Math.min(S.list.length-1,S.i+d));render()}
+
+function finishStudy(){
+  const n=S.list.length,ok=S.list.filter((q,i)=>S.ans[i]==q.a).length,un=S.ans.filter(x=>x!=null).length;
+  const wrong=S.list.filter((q,i)=>S.ans[i]!=null&&S.ans[i]!=q.a);
+  app.innerHTML=`<div class="card"><h2>${NAMES[S.ci]}</h2><div class="score">${ok}/${n}</div>
+  <p class="sub">Đã làm ${un}/${n} câu · Đúng ${ok} · Sai ${wrong.length}</p>
+  <div class="row">${wrong.length?`<button class="pri" onclick="startStudy(${S.ci},shuffle(S.wrongList))">Luyện lại ${wrong.length} câu sai</button>`:''}
+  <button onclick="startStudy(${S.ci})">Học lại chương</button><button onclick="studyMenu()">Chọn chương khác</button><button onclick="home()">Trang chủ</button></div></div>`;
+  S.wrongList=wrong;
+}
+
+function submit(){
+  const un=S.list.length-S.ans.filter(x=>x!=null).length;
+  if(un&&!confirm(`Còn ${un} câu chưa làm. Vẫn nộp bài?`))return;
+  clearInterval(S.timer);S.time=(Date.now()-S.t0)/1000|0;result();
+}
+function result(filter='all'){
+  const n=S.list.length,ok=S.list.filter((q,i)=>S.ans[i]==q.a).length;
+  const per=NAMES.map((nm,c)=>{const idx=S.list.map((q,i)=>q.ch==c?i:-1).filter(i=>i>=0);return [nm,idx.filter(i=>S.ans[i]==S.list[i].a).length,idx.length]});
+  let h=`<div class="card"><h2>Kết quả kiểm tra</h2><div class="score">${ok}/${n} <small style="font-size:20px;color:var(--mut)">(${Math.round(ok/n*100)}%)</small></div>
+  <p class="sub">Thời gian: ${fmt(S.time)}</p>
+  <table>${per.map(p=>`<tr><td>${p[0]}</td><td><b>${p[1]}/${p[2]}</b></td></tr>`).join('')}</table>
+  <div class="row"><button class="pri" onclick="startTest()">Làm đề mới</button><button onclick="home()">Trang chủ</button></div></div>
+  <div class="card"><div class="tag">Bảng kết quả (bấm để xem câu)</div><div class="pal">${S.list.map((q,i)=>`<button class="${S.ans[i]==q.a?'ok':'bad'}" onclick="document.getElementById('r${i}').scrollIntoView({behavior:'smooth'})">${i+1}</button>`).join('')}</div>
+  <div class="row"><button onclick="result('all')">Tất cả</button><button onclick="result('wrong')">Chỉ câu sai</button></div></div>`;
+  S.list.forEach((q,i)=>{
+    const good=S.ans[i]==q.a;if(filter=='wrong'&&good)return;
+    h+=`<div class="card" id="r${i}"><div class="tag">Câu ${i+1} · ${NAMES[q.ch].split(' – ')[0]} · ${good?'✔ Đúng':S.ans[i]==null?'✘ Bỏ trống':'✘ Sai'}</div><p class="q">${esc(q.q)}</p>`+
+    q.o.map((o,k)=>`<div class="opt ${k==q.a?'ok':k==S.ans[i]?'bad':''}">${q.o.length==4?`<b>${L[k]}.</b> `:''}${esc(o)}${k==q.a?' ✔':k==S.ans[i]?' ✘ (bạn chọn)':''}</div>`).join('')+`</div>`;
+  });
+  app.innerHTML=h;scrollTo(0,0);
+}
+home();
+</script>
+</body>
+</html>
