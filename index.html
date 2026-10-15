@@ -40,6 +40,10 @@ button:disabled{opacity:.5;cursor:default}
 table{width:100%;border-collapse:collapse}td,th{padding:6px 8px;border-bottom:1px solid var(--bd);text-align:left}
 .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 label.chk{display:flex;gap:6px;align-items:center;color:var(--mut);font-size:15px}
+.rv{margin:4px 0 0;padding-left:0;list-style:none}.rv li{padding:4px 10px;border-radius:8px;margin-bottom:3px;color:var(--mut)}.rv li.ok{background:var(--okbg);color:var(--ok);font-weight:600}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.filters button.on{background:var(--pri);border-color:var(--pri);color:#fff}
+input.srch{width:100%;font:inherit;padding:10px 12px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx)}
+h3.chh{margin:18px 0 8px;font-size:17px}
 </style>
 </head>
 <body>
@@ -536,6 +540,7 @@ function home(){
   <div class="modes">
     <button class="card mode" onclick="studyMenu()"><b>📖 Chế độ học</b>Học theo từng chương, xem đáp án đúng/sai ngay sau mỗi câu.</button>
     <button class="card mode" onclick="startTest()"><b>📝 Chế độ kiểm tra</b>60 câu: mỗi chương 10 câu ngẫu nhiên. Nộp bài mới biết kết quả.</button>
+    <button class="card mode" style="grid-column:1/-1" onclick="reviewAll()"><b>📋 Xem toàn bộ đáp án</b>Liệt kê tất cả câu hỏi kèm đáp án đúng, lọc theo chương và tìm kiếm.</button>
   </div>`;
 }
 function studyMenu(){
@@ -616,6 +621,37 @@ function result(filter='all'){
     q.o.map((o,k)=>`<div class="opt ${k==q.a?'ok':k==S.ans[i]?'bad':''}">${q.o.length==4?`<b>${L[k]}.</b> `:''}${esc(o)}${k==q.a?' ✔':k==S.ans[i]?' ✘ (bạn chọn)':''}</div>`).join('')+`</div>`;
   });
   app.innerHTML=h;scrollTo(0,0);
+}
+/* ===== CHẾ ĐỘ XEM TOÀN BỘ ĐÁP ÁN ===== */
+function reviewAll(){
+  clearInterval(S.timer);S={mode:'review',ch:-1,kw:'',only:false};
+  app.innerHTML=`<div class="top"><h2>📋 Toàn bộ câu hỏi & đáp án</h2><button onclick="home()">← Trang chủ</button></div>
+  <div class="card"><input class="srch" id="kw" placeholder="Tìm theo từ khóa trong câu hỏi hoặc đáp án..." oninput="S.kw=this.value;drawReview()">
+  <div class="filters" id="flt"></div>
+  <label class="chk" style="margin-top:10px"><input type="checkbox" onchange="S.only=this.checked;drawReview()"> Chỉ hiện đáp án đúng (ẩn phương án nhiễu)</label></div>
+  <p class="sub" id="cnt"></p><div id="rvList"></div>`;
+  drawReview();
+}
+function drawReview(){
+  $('#flt').innerHTML=[-1,...NAMES.keys()].map(c=>`<button class="${S.ch==c?'on':''}" onclick="S.ch=${c};drawReview()">${c<0?'Tất cả':'Chương '+(c+1)}</button>`).join('');
+  const kw=S.kw.trim().toLowerCase();
+  let h='',total=0;
+  CH.forEach((list,c)=>{
+    if(S.ch>=0&&S.ch!=c)return;
+    const qs=list.filter(q=>!kw||(q.q+' '+q.o.join(' ')).toLowerCase().includes(kw));
+    if(!qs.length)return;
+    h+=`<h3 class="chh">${NAMES[c]} <span style="color:var(--mut);font-weight:400">(${qs.length} câu)</span></h3>`;
+    qs.forEach(q=>{
+      total++;
+      const n=list.indexOf(q)+1, tf=q.o.length==2;
+      const opts=S.only
+        ?`<li class="ok">${tf?'':`<b>${L[q.a]}.</b> `}${esc(q.o[q.a])} ✔</li>`
+        :q.o.map((o,k)=>`<li class="${k==q.a?'ok':''}">${tf?'':`<b>${L[k]}.</b> `}${esc(o)}${k==q.a?' ✔':''}</li>`).join('');
+      h+=`<div class="card"><div class="tag">Câu ${n} · ${tf?'Đúng / Sai':'Trắc nghiệm'}</div><p class="q" style="margin-bottom:6px">${esc(q.q)}</p><ul class="rv">${opts}</ul></div>`;
+    });
+  });
+  $('#cnt').textContent=`Hiển thị ${total} câu`;
+  $('#rvList').innerHTML=h||'<div class="card">Không tìm thấy câu nào.</div>';
 }
 home();
 </script>
